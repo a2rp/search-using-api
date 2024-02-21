@@ -1,0 +1,12 @@
+.headerContainer {
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .navlink {
+        text-decoration: underline;
+        color: #000;
+        cursor: pointer;
+    }
+}

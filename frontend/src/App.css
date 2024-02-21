@@ -1,0 +1,12 @@
+.App {
+    padding: 15px;
+}
+
+.pageLink {
+    padding: 15px;
+    text-decoration: none;
+}
+
+.pageLink:hover {
+    text-decoration: underline;
+}

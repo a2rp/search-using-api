@@ -1,0 +1,27 @@
+.container {
+    // border: 1px solid #f00;
+
+    form {
+        .loginSection {
+            margin: 15px;
+            padding: 15px;
+            background-color: aliceblue;
+
+            label {
+                display: block;
+            }
+
+            input[type="email"],
+            input[type="password"] {
+                display: block;
+                width: 300px;
+                height: 30px;
+                padding-left: 15px;
+            }
+
+            .response {
+                margin-left: 15px;
+            }
+        }
+    }
+}

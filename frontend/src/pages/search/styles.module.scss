@@ -1,0 +1,28 @@
+.container {
+    // border: 1px solid #f00;
+    // padding: 15px;
+
+    .searchSection {
+        padding: 15px;
+        background-color: aliceblue;
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+
+        input[type="text"] {
+            width: 100%;
+            height: 30px;
+            padding-left: 15px;
+        }
+
+        input[type="button"] {
+            width: 200px;
+        }
+    }
+
+    .media {
+        width: 100px;
+        float: left;
+        margin: 15px;
+    }
+}
