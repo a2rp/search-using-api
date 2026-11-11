@@ -1,0 +1,43 @@
+.container {
+    min-height: 100vh;
+}
+
+.hero {
+    width: min(900px, calc(100% - 32px));
+    margin: clamp(64px, 12vh, 140px) auto;
+    padding: clamp(24px, 6vw, 64px);
+    border: 1px solid #d9e0e8;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #fff, #eaf3fb);
+    box-shadow: 0 16px 48px rgb(22 34 51 / 8%);
+
+    h1 {
+        max-width: 650px;
+        margin: 0;
+        font-size: clamp(2.3rem, 7vw, 4.5rem);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+    }
+
+    button {
+        margin-top: 8px;
+        text-transform: none;
+    }
+}
+
+.eyebrow {
+    margin: 0 0 16px;
+    color: #1769aa;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.description {
+    max-width: 600px;
+    margin: 20px 0 24px;
+    color: #526071;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}

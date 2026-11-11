@@ -1,28 +1,147 @@
 .container {
-    // border: 1px solid #f00;
-    // padding: 15px;
+    min-height: 100vh;
+}
 
-    .searchSection {
-        padding: 15px;
-        background-color: aliceblue;
-        display: flex;
-        justify-content: space-between;
-        gap: 15px;
+.content {
+    width: min(1100px, calc(100% - 32px));
+    margin: 32px auto 64px;
 
-        input[type="text"] {
-            width: 100%;
-            height: 30px;
-            padding-left: 15px;
-        }
+    h1 {
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+    }
+}
 
-        input[type="button"] {
-            width: 200px;
+.intro {
+    margin: 8px 0 24px;
+    color: #5d6674;
+}
+
+.searchSection {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    padding: 16px;
+    border: 1px solid #d9e0e8;
+    border-radius: 12px;
+    background: #f7f9fc;
+
+    input {
+        flex: 1;
+        min-width: 0;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid #aeb9c7;
+        border-radius: 6px;
+        background: #fff;
+        color: #17202b;
+        font: inherit;
+
+        &:focus-visible {
+            outline: 3px solid #83c5ff;
+            outline-offset: 1px;
         }
     }
 
-    .media {
-        width: 100px;
-        float: left;
-        margin: 15px;
+    button {
+        min-width: 112px;
+        text-transform: none;
+    }
+}
+
+.results {
+    margin-top: 24px;
+}
+
+.message {
+    color: #4f5b6b;
+}
+
+.showGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+.showCard {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    height: 100%;
+}
+
+.media {
+    width: 100%;
+    max-height: 360px;
+    object-fit: cover;
+    object-position: center 25%;
+}
+
+.cardContent {
+    flex: 1;
+}
+
+.showTitle {
+    margin: 0 0 10px;
+    font-size: 1.3rem;
+    font-weight: 650;
+}
+
+.summary {
+    color: #364152;
+    line-height: 1.55;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 12px;
+    margin: 16px 0 0;
+    font-size: 0.92rem;
+
+    dt {
+        font-weight: 600;
+    }
+
+    dd {
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
+.cardActions {
+    padding: 0 16px 12px;
+
+    a {
+        text-transform: none;
+    }
+}
+
+.visuallyHidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 540px) {
+    .content {
+        width: min(100% - 24px, 1100px);
+        margin-top: 24px;
+    }
+
+    .searchSection {
+        flex-direction: column;
+        padding: 12px;
+    }
+
+    .searchSection button {
+        min-height: 44px;
     }
 }

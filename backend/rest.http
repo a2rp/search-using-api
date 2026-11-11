@@ -1,16 +1,11 @@
-### /hello
-GET http://localhost:1198/api/hello
+@baseUrl = http://localhost:1198/api
+@token = paste-the-login-token-here
 
-### generate hashed passwords
-POST http://localhost:1198/api/hashed-password
-Content-Type: application/json
-
-{
-    "password": "password3"
-}
+### health check
+GET {{baseUrl}}/health
 
 ### login
-POST http://localhost:1198/api/login
+POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
@@ -19,7 +14,5 @@ Content-Type: application/json
 }
 
 ### search
-POST http://localhost:1198/api/search?title=sunday
-Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXIxQG1haWwuY29tIiwiaWF0IjoxNjkzODk2MjU3LCJleHAiOjE2OTM5MDM0NTd9.MGpRZABN21FhWDnz2C4vOAay9X4jkBrdB8BkgXQ-ObE
-
+GET {{baseUrl}}/search?title=sunday
+Authorization: Bearer {{token}}

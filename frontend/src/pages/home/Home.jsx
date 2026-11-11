@@ -1,16 +1,20 @@
-import React from 'react'
-import Header from '../../components/header'
+import Button from "@mui/material/Button";
+import Header from "../../components/header";
+import { NavLink } from "react-router-dom";
+import styles from "./styles.module.scss";
 
-// this component is called to display homepage
-const Home = () => {
+export default function Home() {
     return (
-        <div>
-            {/* header component is common for all pages */}
+        <div className={styles.container}>
             <Header />
-            <h1>Welcome to Full-Stack Application Home Page</h1>
+            <main className={styles.hero}>
+                <p className={styles.eyebrow}>TVMaze show search</p>
+                <h1>Find your next show to watch.</h1>
+                <p className={styles.description}>
+                    Search a catalog of TV series and explore summaries, genres, schedules, and more.
+                </p>
+                <Button component={NavLink} to="/login" variant="contained" size="large">Start searching</Button>
+            </main>
         </div>
-    )
+    );
 }
-
-export default Home
-

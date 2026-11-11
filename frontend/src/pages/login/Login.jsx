@@ -1,103 +1,76 @@
-import React, { useEffect, useState } from 'react'
-import styles from "./styles.module.scss";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from '../../components/header';
+import Header from "../../components/header";
+import { getSavedToken, requestJson, saveToken } from "../../api";
+import styles from "./styles.module.scss";
 
-const Login = () => {
-    // to route to desired page
-    const navigate = useNavigate(null);
+export default function Login() {
+    const navigate = useNavigate();
+    const [token, setToken] = useState(getSavedToken);
+    const [inputs, setInputs] = useState({ email: "", password: "" });
+    const [error, setError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // localstorage holds user id token
-    const [token, setToken] = useState(window.localStorage.getItem("token") || "");
     useEffect(() => {
-        if (token.length > 0) {
-            navigate("/search");
-        }
-    }, [token]);
+        if (token) navigate("/search", { replace: true });
+    }, [navigate, token]);
 
-    // login form inputs
-    const [inputs, setInputs] = useState({
-        email: "",
-        password: ""
-    });
-    const [response, setResponse] = useState("");
     const handleChange = (event) => {
-        setInputs({ ...inputs, [event.target.name]: event.target.value });
+        setInputs((current) => ({ ...current, [event.target.name]: event.target.value }));
     };
 
-    // login user function for validation and api call
-    const loginUser = (email, password) => {
-        const data = {
-            email,
-            password
-        };
-        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(data.email)) {
-            alert("invalid email");
-            return;
-        }
-        if (data.password.trim().length < 8) {
-            alert("password length minimum 8 required");
-            return;
-        }
-        if (data.password.trim().length > 16) {
-            alert("password length maximum 16 required");
-            return;
-        }
-        const reg = /^[a-zA-Z0-9]+$/;
-        var re = reg.test(data.password);
-        if (!re) {
-            alert("only alphanumeric password accepted");
-            return;
-        }
-        const url = `http://localhost:1198/api/login`;
-        document.querySelector(".submit").disabled = true;
-        setResponse("");
-        axios.post(url, data).then(response => {
-            console.log(response);
-            const token = response.data.token;
-            setResponse(token);
-
-            window.localStorage.clear();
-            window.localStorage.setItem("token", token);
-            navigate("/search");
-        }).catch(error => {
-            console.log(error);
-            setResponse("Error: " + error.response.data.message);
-        }).finally(() => {
-            document.querySelector(".submit").disabled = false;
-        });
-    };
-
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setError("");
+        setIsSubmitting(true);
 
-        const email = event.target.email.value.trim();
-        const password = event.target.password.value.trim();
-        loginUser(email, password);
+        try {
+            const result = await requestJson("/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: inputs.email.trim().toLowerCase(), password: inputs.password }),
+            });
+            if (!result.token) throw new Error("The server did not return a login token.");
+            if (!saveToken(result.token)) throw new Error("This browser could not save the login. Enable local storage and try again.");
+            setToken(result.token);
+            navigate("/search", { replace: true });
+        } catch (requestError) {
+            setError(requestError instanceof Error ? requestError.message : "Login failed. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
         <div className={styles.container}>
             <Header />
-            <h1>Login</h1>
-            <form onSubmit={handleSubmit}>
-                <div className={styles.loginSection}>
-                    <label htmlFor="email">Email</label>
-                    <input type="email" name="email" className={styles.input} placeholder="Enter your email" onChange={handleChange} value={inputs.email} required />
-                </div>
-                <div className={styles.loginSection}>
-                    <label htmlFor="password">Password</label>
-                    <input type="password" name="password" className={styles.input} placeholder="Enter your password" onChange={handleChange} value={inputs.password} required />
-                </div>
-                <div className={styles.loginSection}>
-                    <input type="submit" value="Login" className={`${styles.submit} submit`} />
-                    <b className={styles.response}>{response}</b>
-                </div>
-            </form>
+            <main className={styles.content}>
+                <h1>Sign in</h1>
+                <p>Use a demo account to search the TVMaze catalog.</p>
+                <form className={styles.form} onSubmit={handleSubmit}>
+                    <div className={styles.loginSection}>
+                        <label htmlFor="email">Email</label>
+                        <input id="email" type="email" name="email" autoComplete="username" maxLength={254} placeholder="Enter your email" onChange={handleChange} value={inputs.email} required />
+                    </div>
+                    <div className={styles.loginSection}>
+                        <label htmlFor="password">Password</label>
+                        <input id="password" type="password" name="password" autoComplete="current-password" maxLength={72} placeholder="Enter your password" onChange={handleChange} value={inputs.password} required />
+                    </div>
+                    <button type="submit" className={styles.submit} disabled={isSubmitting}>
+                        {isSubmitting ? "Signing in..." : "Sign in"}
+                    </button>
+                    {error && <p className={styles.response} role="alert">{error}</p>}
+                </form>
+                <details className={styles.demoCredentials}>
+                    <summary>Demo accounts</summary>
+                    <ul>
+                        <li><code>user1@mail.com</code> / <code>password1</code></li>
+                        <li><code>user2@mail.com</code> / <code>password2</code></li>
+                        <li><code>user3@mail.com</code> / <code>password3</code></li>
+                    </ul>
+                    <p>These public sample credentials are for this demo only.</p>
+                </details>
+            </main>
         </div>
-    )
+    );
 }
-
-export default Login
-

@@ -1,97 +1,54 @@
+const axios = require("axios");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userCreds = require("../middlewares/user-credentials");
-const axios = require("axios");
 
-const hello = (req, res, next) => {
-    res.send({
-        success: true,
-        message: "hello world"
-    });
+const login = async (req, res) => {
+    const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
+    const password = typeof req.body?.password === "string" ? req.body.password : "";
+    if (!email || !password || email.length > 254 || password.length > 72) {
+        return res.status(400).json({ success: false, message: "Enter a valid email and password" });
+    }
+
+    const user = userCreds.find((candidate) => candidate.email === email);
+    const passwordMatches = user ? await bcrypt.compare(password, user.passwordHash) : false;
+    if (!user || !passwordMatches) {
+        return res.status(401).json({ success: false, message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+        { sub: user.id, email: user.email },
+        process.env.TOKEN_KEY,
+        {
+            expiresIn: "2h",
+            issuer: "search-using-api",
+            audience: "search-using-api",
+        },
+    );
+    return res.status(200).json({ success: true, token });
 };
 
-const generateHashedPasswords = (req, res, next) => {
-    const { password } = req.body;
-    const saltRounds = 10;
-    bcrypt.genSalt(saltRounds).then(salt => {
-        // console.log("Salt: ", salt);
-        return bcrypt.hash(password, salt);
-    }).then(hash => {
-        // console.log("Hash: ", hash);
-        return res.status(200).json({
-            success: true,
-            message: hash
-        });
-    }).catch(err => {
-        console.error(err.message);
-        res.status(500).json({
+const search = async (req, res) => {
+    const title = typeof req.query.title === "string" ? req.query.title.trim() : "";
+    if (!title || title.length > 100) {
+        return res.status(400).json({
             success: false,
-            message: err.message
-        });
-    });
-};
-
-const login = (req, res, next) => {
-    const { email, password } = req.body;
-    if (!(email && password)) {
-        res.status(400).json({
-            success: false,
-            message: "All input is required"
+            message: "Enter a show title between 1 and 100 characters",
         });
     }
 
-    let validEmail = false;
-    let savedPassword = "";
-    userCreds.forEach(data => {
-        // console.log(data.email);
-        if (data.email === email) {
-            validEmail = true;
-            savedPassword = data.password;
-        }
-    });
-
-    if (!validEmail) {
-        return res.status(403).send({
+    try {
+        const response = await axios.get("https://api.tvmaze.com/search/shows", {
+            params: { q: title },
+            timeout: 10000,
+        });
+        return res.status(200).json({ success: true, results: response.data });
+    } catch {
+        return res.status(502).json({
             success: false,
-            message: "Invalid email"
+            message: "The TV show service is temporarily unavailable. Try again shortly.",
         });
     }
-
-    if (savedPassword === password) {
-        const token = jwt.sign({ email }, process.env.TOKEN_KEY, { expiresIn: "2h" });
-        res.status(201).json({
-            success: true,
-            token
-        });
-    } else {
-        return res.status(403).send({
-            success: false,
-            message: "Incorrect password"
-        })
-    }
 };
 
-const search = async (req, res, next) => {
-    const { title } = req.query;
-    axios({
-        method: "get",
-        url: `https://api.tvmaze.com/search/shows?q=${title}`
-    }).then(response => {
-        res.status(200).json({
-            success: true,
-            message: response.data
-        });
-    }).catch((error) => {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        })
-    });
-};
-
-module.exports = {
-    hello,
-    login,
-    search
-};
-
+module.exports = { login, search };
